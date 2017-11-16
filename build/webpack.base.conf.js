@@ -4,13 +4,19 @@ const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 
+var phaserModule = path.join(__dirname, '../node_modules/phaser-ce/')
+var phaser = path.join(phaserModule, 'build/custom/phaser-split.js')
+var pixi = path.join(phaserModule, 'build/custom/pixi.js')
+var p2 = path.join(phaserModule, 'build/custom/p2.js')
+
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
 module.exports = {
   entry: {
-    app: './src/main.js'
+    app: './src/main.js',
+    vendor: ['pixi', 'p2', 'phaser']
   },
   output: {
     path: config.build.assetsRoot,
@@ -24,6 +30,9 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
+      'phaser': phaser,
+      'pixi': pixi,
+      'p2': p2
     }
   },
   module: {
@@ -61,7 +70,10 @@ module.exports = {
           limit: 10000,
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
-      }
+      },
+      { test: /pixi\.js/, use: ['expose-loader?PIXI'] },
+      { test: /phaser-split\.js$/, use: ['expose-loader?Phaser'] },
+      { test: /p2\.js/, use: ['expose-loader?p2'] }
     ]
   }
 }
